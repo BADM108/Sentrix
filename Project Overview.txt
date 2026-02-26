@@ -1,13 +1,30 @@
 ** A simple Description of What the Project as of now **
 
-The Smart Healthcare Wristband System is an IoT-based patient monitoring solution designed to help caretakers supervise elderly and mentally ill patients in real time. The system consists of a wearable wristband device and a connected mobile or web application that allows remote monitoring, location tracking, and basic communication between the caretaker and the patient.
+The Smart Healthcare Wristband System is an IoT-based patient monitoring solution designed 
+to help caretakers supervise elderly and mentally ill patients in real time. The system 
+consists of a wearable wristband device and a connected mobile or web application that allows 
+remote monitoring, location tracking, and basic communication between the caretaker and the patient.
 
-When the caretaker opens the application, they are first presented with a login page. If they do not have an account, they can register using the provided registration option. After successful authentication, the caretaker gains access to the system dashboard.
+When the caretaker opens the application, they are first presented with a login page. If they do 
+not have an account, they can register using the provided registration option. After successful 
+authentication, the caretaker gains access to the system dashboard.
 
-Each wristband device created for the system contains a unique device ID. This ID is converted into a QR code and attached to the device. The caretaker scans the QR code using the application, which retrieves the device ID and links the wristband to the caretaker’s account. Inside the application, the caretaker can add patient details such as name, age, and medical condition, and assign the scanned device ID to that patient. This securely connects the physical device to the digital patient profile.
+Each wristband device created for the system contains a unique device ID. This ID is converted 
+into a QR code and attached to the device. The caretaker scans the QR code using the application, 
+which retrieves the device ID and links the wristband to the caretaker’s account. Inside the application, 
+the caretaker can add patient details such as name, age, and medical condition,
+and assign the scanned device ID to that patient. This securely connects the physical
+device to the digital patient profile.
 
-Once connected, the system enables real-time monitoring of the patient’s health data through the app. The caretaker can also view the patient’s live location on a map. A geo-fencing feature allows the caretaker to define a restricted area, and if the patient moves outside the selected boundary, the system automatically sends a notification alert to the caretaker.
+Once connected, the system enables real-time monitoring of the patient’s health data
+through the app. The caretaker can also view the patient’s live location on a map.
+A geo-fencing feature allows the caretaker to define a restricted area, and if the patient
+moves outside the selected boundary, the system automatically sends a notification alert to the caretaker.
 
-The application also includes a simple communication feature where the caretaker can send predefined yes-or-no messages to the patient. These messages are displayed on the wristband’s screen, and the patient can respond using yes or no buttons on the device. The response is then sent back to the application in real time.
+The application also includes a simple communication feature where the caretaker can send 
+predefined yes-or-no messages to the patient. These messages are displayed on the wristband’s screen, 
+and the patient can respond using yes or no buttons on the device. The response is then sent back to the 
+application in real time.
 
-Overall, the Smart Healthcare Wristband System provides a secure and efficient way to monitor patients remotely, improve safety through live tracking and alerts, and maintain simple two-way communication between caretaker and patient.
+Overall, the Smart Healthcare Wristband System provides a secure and efficient way to monitor patients 
+remotely, improve safety through live tracking and alerts, and maintain simple two-way communication between caretaker and patient.
