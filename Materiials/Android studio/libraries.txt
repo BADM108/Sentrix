@@ -1,0 +1,5 @@
+Firebase ESP Client (by Mobitz)
+
+TinyGPS++ (for the NEO-6M GPS)
+
+MAX30102 (by SparkFun or Maxim)
