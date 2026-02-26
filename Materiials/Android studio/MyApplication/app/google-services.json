@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "299690712721",
+    "firebase_url": "https://sentrix-e4390-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "sentrix-e4390",
+    "storage_bucket": "sentrix-e4390.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299690712721:android:f572969acc09b8bfd0e930",
+        "android_client_info": {
+          "package_name": "com.iotproject.wristband"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj8M3jGAoVxeACOFWo4Vf8pvx6UIIXkSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
