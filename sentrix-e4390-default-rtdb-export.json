@@ -1,0 +1,38 @@
+{
+  "caretakers": {
+    "caretaker_uid": 1,
+    "email": "amila@gmail.com",
+    "name": "Amila"
+  },
+  "devices": {
+    "device_id": {
+      "ESP_32": true
+    }
+  },
+  "patients": {
+    "age": 25,
+    "caretaker_id": 1,
+    "communication": {
+      "question": "Are you ok",
+      "response": "yes",
+      "status": "completed"
+    },
+    "condition": "Hypertension",
+    "device_id": 1,
+    "geofence": {
+      "home_lat": 0,
+      "home_lng": 0,
+      "radius": 500
+    },
+    "location": {
+      "lat": 0,
+      "lng": 0
+    },
+    "name": "rukshan",
+    "patient_id": 1,
+    "vitals": {
+      "bpm": 78,
+      "spo2": "85%"
+    }
+  }
+}
