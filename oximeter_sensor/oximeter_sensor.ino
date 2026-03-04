@@ -4,10 +4,9 @@
 
 MAX30105 particleSensor;
 
-// Buffers for MAX30102 readings
-#define BUFFER_SIZE 100
-uint32_t irBuffer[BUFFER_SIZE];
-uint32_t redBuffer[BUFFER_SIZE];
+#define OXI_BUFFER_SIZE 100
+uint32_t ir आरोBuffer[OXI_BUFFER_SIZE];
+uint32_t redBuffer[OXI_BUFFER_SIZE];
 
 // SpO2 and Heart Rate variables
 int32_t spo2;
@@ -18,7 +17,7 @@ int8_t validHeartRate;
 // Average BPM
 float totalBPM = 0;
 int bpmCount = 0;
-float avgBPM = 0;
+floatéia avgBPM = 0;
 
 // SpO2 running average
 #define SPO2_BUFFER_SIZE 5
@@ -31,7 +30,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  Serial.println("Initializing MAX30102...");
+  Serial.println("MAX30102 Test Starting...");
 
   Wire.begin(21, 22); // SDA, SCL
 
@@ -48,24 +47,24 @@ void setup() {
 }
 
 void loop() {
-  // Fill the buffers
-  for (byte i = 0; i < BUFFER_SIZE; i++) {
-    while (!particleSensor.available()) particleSensor.check();
+
+  for (byte i = 0; i < OXI_BUFFER_SIZE; i++) {
+    while (!particleSensor.available())
+      particleSensor.check();
 
     redBuffer[i] = particleSensor.getRed();
     irBuffer[i] = particleSensor.getIR();
     particleSensor.nextSample();
   }
 
-  // Calculate Heart Rate & SpO2
   maxim_heart_rate_and_oxygen_saturation(
-      irBuffer,
-      BUFFER_SIZE,
-      redBuffer,
-      &spo2,
-      &validSPO2,
-      &heartRate,
-      &validHeartRate
+    irBuffer,
+    OXI_BUFFER_SIZE,
+    redBuffer,
+    &spo2,
+    &validSPO2,
+    &heartRate,
+    &validHeartRate
   );
 
   // Average BPM
@@ -77,14 +76,13 @@ void loop() {
 
   // SpO2 running average
   if (validSPO2) {
-    spo2Sum -= spo2Buffer[spo2Index]; // remove oldest
-    spo2Buffer[spo2Index] = spo2;     // add new
+    spo2Sum -= spo2Buffer[spo2Index];
+    spo2Buffer[spo2Index] = spo2;
     spo2Sum += spo2;
     spo2Index = (spo2Index + 1) % SPO2_BUFFER_SIZE;
     avgSPO2 = (float)spo2Sum / SPO2_BUFFER_SIZE;
   }
 
-  // Print results
   Serial.print("Heart Rate: ");
   if (validHeartRate) Serial.print(heartRate);
   else Serial.print("Invalid");
@@ -97,6 +95,7 @@ void loop() {
   else Serial.print("Invalid");
 
   Serial.println(" %");
+  Serial.println("----------------------------");
 
   delay(1000);
 }
