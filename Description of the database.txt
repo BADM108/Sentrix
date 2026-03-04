@@ -1,0 +1,3 @@
+This database is designed for the Sentrix Patient Monitoring System to connect patients, caretakers, and medical devices in real time. It stores essential caretaker details, like names and emails, and keeps track of registered hardware like the ESP32.
+
+For each patient, the system monitors live health vitals such as heart rate and oxygen levels, alongside their specific medical conditions. It also includes safety features like GPS tracking with a 500-meter safety zone and a simple messaging tool that lets caretakers check if a patient is okay. Essentially, it acts as a central hub that ensures health and location data are always synchronized and accessible during an emergency.
