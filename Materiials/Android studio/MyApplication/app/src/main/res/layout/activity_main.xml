@@ -5,4 +5,45 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"/>
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="89dp"
+        android:layout_height="42dp"
+        android:text="Button"
+        tools:layout_editor_absoluteX="306dp"
+        tools:layout_editor_absoluteY="642dp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="392dp"
+        android:layout_height="97dp"
+        android:outlineAmbientShadowColor="#E1DEE6"
+        android:outlineSpotShadowColor="#121111"
+        tools:layout_editor_absoluteX="14dp"
+        tools:layout_editor_absoluteY="149dp" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome "
+        android:textSize="34sp"
+        tools:layout_editor_absoluteX="131dp"
+        tools:layout_editor_absoluteY="28dp" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alerts"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="19dp"
+        tools:layout_editor_absoluteY="111dp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="286dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

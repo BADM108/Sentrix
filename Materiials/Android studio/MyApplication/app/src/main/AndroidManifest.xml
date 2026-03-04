@@ -16,6 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".welcome_screen"
+            android:exported="false" />
+        <activity
+            android:name=".Registration_Page"
+            android:exported="true" />
+
+        <activity
             android:name=".Login_Page"
             android:exported="false" />
         <activity
@@ -29,6 +36,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
     </application>
 
