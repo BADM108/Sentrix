@@ -1,0 +1,3 @@
+---Installing Sentrix is simple: just move the APK file to your phone and tap to install.---
+ After the installation is complete, launch the app to create your caretaker account. 
+Once you log in, you will be directed straight to the home screen to begin managing your patients
