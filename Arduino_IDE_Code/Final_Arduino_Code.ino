@@ -1,4 +1,4 @@
-#include <TinyGsmClient.h> // Required for the Dongle/SIM module
+#include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -7,38 +7,28 @@
 #include <heartRate.h>
 #include <TinyGPS++.h>
 
-// --- MODEM CONFIGURATION ---
-#define TINY_GSM_MODEM_SIM7600  // Change this if your dongle uses a different chip (e.g., SIM800)
-#define SerialAT Serial1        // Serial for Modem/Dongle communication
+// DONGLE CREDENTIALS
+const char* ssid = "4G-UFI-XX";
+const char* password = "1234567890";
 
-// Your SIM Card credentials (Check with your provider like Dialog/Mobitel)
-const char apn[]      = "internet"; 
-const char gprsUser[] = "";
-const char gprsPass[] = "";
-
-// --- FIREBASE CONFIGURATION ---
+// FIREBASE
 #define API_KEY "AIzaSyDj8M3jGAoVxeACOFWo4Vf8pvx6UIIXkSw"
 #define DATABASE_URL "https://sentrix-e4390-default-rtdb.asia-southeast1.firebasedatabase.app"
 #define CARETAKER_UID "SwzH5E9axEfPTBjr5mZy0QPoGW72"
 #define DEVICE_ID "SENTRIX_001"
 
-// --- PINS ---
-#define MODEM_TX 26 // Connect to Dongle RX
-#define MODEM_RX 25 // Connect to Dongle TX
+// PINS
 #define BUZZER_PIN 27
 #define YES_BTN 32
 #define NO_BTN 33
 #define GPS_RX 16
 #define GPS_TX 17
 
-// --- OBJECTS ---
-TinyGsm modem(SerialAT);
-TinyGsmClient client(modem); // Creates a network client for Firebase
-
+// OBJECTS
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
 MAX30105 particleSensor;
 TinyGPSPlus gps;
-HardwareSerial gpsSerial(2); 
+HardwareSerial gpsSerial(2);
 
 FirebaseData fbdo;
 FirebaseAuth auth;
@@ -47,119 +37,172 @@ FirebaseConfig config;
 long lastUpdate = 0;
 String currentMsg = "";
 bool hasNewMessage = false;
+
 byte beatAvg = 0;
-float lat = 0.0, lng = 0.0;
+float lat = 0.0;
+float lng = 0.0;
 
-void setup() {
-    Serial.begin(115200);
-    gpsSerial.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
-    
-    // Initialize Modem Serial
-    SerialAT.begin(115200, SERIAL_8N1, MODEM_RX, MODEM_TX);
-    
-    pinMode(BUZZER_PIN, OUTPUT);
-    pinMode(YES_BTN, INPUT_PULLUP);
-    pinMode(NO_BTN, INPUT_PULLUP);
+void connectWiFi()
+{
+  Serial.print("Connecting to WiFi");
 
-    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) Serial.println("OLED failed");
-    display.clearDisplay();
-    display.setTextColor(WHITE);
-    display.println("Sentrix Starting...");
-    display.println("Connecting to 4G...");
-    display.display();
+  WiFi.begin(ssid, password);
 
-    // 1. Initialize Modem and GPRS
-    Serial.println("Initializing modem...");
-    modem.restart();
-    if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-        Serial.println("GPRS Connection Failed");
-    } else {
-        Serial.println("GPRS Connected");
-    }
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
 
-    if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) Serial.println("MAX30102 failed");
-    particleSensor.setup(); 
-
-    // 2. Firebase Setup with GSM Client
-    config.api_key = API_KEY;
-    config.database_url = DATABASE_URL;
-    
-    // This tells Firebase to use the GSM Client instead of WiFi
-    Firebase.begin(&config, &auth);
+  Serial.println("\nWiFi Connected!");
+  Serial.println(WiFi.localIP());
 }
 
-void loop() {
-    // [The rest of your GPS and Sensor logic remains exactly the same]
-    
-    // GPS Reading
-    while (gpsSerial.available() > 0) {
-        if (gps.encode(gpsSerial.read())) {
-            if (gps.location.isValid()) {
-                lat = gps.location.lat();
-                lng = gps.location.lng();
-            }
-        }
-    }
+void setup()
+{
+  Serial.begin(115200);
 
-    // Vitals Reading
-    long irValue = particleSensor.getIR();
-    if (checkForBeat(irValue)) {
-        beatAvg = 75; 
-    }
+  gpsSerial.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
 
-    // Check GPRS Connection
-    if (!modem.isGprsConnected()) {
-        modem.gprsConnect(apn, gprsUser, gprsPass);
-    }
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(YES_BTN, INPUT_PULLUP);
+  pinMode(NO_BTN, INPUT_PULLUP);
 
-    String path = "caretakers/" + String(CARETAKER_UID) + "/patients/" + String(DEVICE_ID);
-    
-    // Firebase Data Sync
-    if (Firebase.ready() && (millis() - lastUpdate > 5000)) {
-        Firebase.RTDB.setInt(&fbdo, path + "/live_bpm", beatAvg);
-        Firebase.RTDB.setDouble(&fbdo, path + "/latitude", lat);
-        Firebase.RTDB.setDouble(&fbdo, path + "/longitude", lng);
-        lastUpdate = millis();
-    }
+  Wire.begin(21,22);
 
-    // Message handling logic...
-    if (Firebase.RTDB.getString(&fbdo, path + "/last_message_sent")) {
-        String msg = fbdo.stringData();
-        if (msg != "" && msg != currentMsg) {
-            currentMsg = msg;
-            hasNewMessage = true;
-            digitalWrite(BUZZER_PIN, HIGH); delay(200); digitalWrite(BUZZER_PIN, LOW);
-        }
-    }
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  {
+    Serial.println("OLED Failed");
+  }
 
-    // Button Logic
-    if (hasNewMessage) {
-        if (digitalRead(YES_BTN) == LOW) {
-            Firebase.RTDB.setString(&fbdo, path + "/last_response", "YES");
-            Firebase.RTDB.setString(&fbdo, path + "/last_message_sent", "");
-            hasNewMessage = false;
-        } else if (digitalRead(NO_BTN) == LOW) {
-            Firebase.RTDB.setString(&fbdo, path + "/last_response", "NO");
-            Firebase.RTDB.setString(&fbdo, path + "/last_message_sent", "");
-            hasNewMessage = false;
-        }
-    }
+  display.clearDisplay();
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println("Sentrix Starting...");
+  display.println("Connecting WiFi...");
+  display.display();
 
-    updateDisplay();
+  connectWiFi();
+
+  // Firebase Setup
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+
+  // Sensor Start
+  if (!particleSensor.begin(Wire, I2C_SPEED_FAST))
+  {
+    Serial.println("MAX30102 not found");
+  }
+
+  particleSensor.setup();
 }
 
-void updateDisplay() {
-    display.clearDisplay();
-    display.setCursor(0,0);
-    if (hasNewMessage) {
-        display.println("MSG FROM CARETAKER:");
-        display.println(currentMsg);
-        display.println("\n[YES]    [NO]");
-    } else {
-        display.print("BPM: "); display.println(beatAvg);
-        display.print("GPS: "); display.print(lat, 4); 
-        display.print(","); display.println(lng, 4);
-        display.print("Net: "); display.println(modem.isGprsConnected() ? "4G OK" : "OFFLINE");
+void loop()
+{
+
+  // GPS
+  while (gpsSerial.available() > 0)
+  {
+    if (gps.encode(gpsSerial.read()))
+    {
+      if (gps.location.isValid())
+      {
+        lat = gps.location.lat();
+        lng = gps.location.lng();
+      }
     }
-    display.display();
+  }
+
+  // Heart Rate
+  long irValue = particleSensor.getIR();
+
+  if (checkForBeat(irValue))
+  {
+    beatAvg = random(70,85); // Demo BPM
+  }
+
+  String path = "caretakers/" + String(CARETAKER_UID) + "/patients/" + String(DEVICE_ID);
+
+  // Send data to Firebase
+  if (Firebase.ready() && millis() - lastUpdate > 5000)
+  {
+    Firebase.RTDB.setInt(&fbdo, path + "/live_bpm", beatAvg);
+    Firebase.RTDB.setDouble(&fbdo, path + "/latitude", lat);
+    Firebase.RTDB.setDouble(&fbdo, path + "/longitude", lng);
+
+    lastUpdate = millis();
+  }
+
+  // Check messages
+  if (Firebase.RTDB.getString(&fbdo, path + "/last_message_sent"))
+  {
+    String msg = fbdo.stringData();
+
+    if (msg != "" && msg != currentMsg)
+    {
+      currentMsg = msg;
+      hasNewMessage = true;
+
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(200);
+      digitalWrite(BUZZER_PIN, LOW);
+    }
+  }
+
+  // Button Logic
+  if (hasNewMessage)
+  {
+    if (digitalRead(YES_BTN) == LOW)
+    {
+      Firebase.RTDB.setString(&fbdo, path + "/last_response", "YES");
+      Firebase.RTDB.setString(&fbdo, path + "/last_message_sent", "");
+      hasNewMessage = false;
+    }
+
+    if (digitalRead(NO_BTN) == LOW)
+    {
+      Firebase.RTDB.setString(&fbdo, path + "/last_response", "NO");
+      Firebase.RTDB.setString(&fbdo, path + "/last_message_sent", "");
+      hasNewMessage = false;
+    }
+  }
+
+  updateDisplay();
+}
+
+void updateDisplay()
+{
+  display.clearDisplay();
+  display.setCursor(0,0);
+
+  if(hasNewMessage)
+  {
+    display.println("MSG FROM CARETAKER");
+    display.println(currentMsg);
+    display.println("");
+    display.println("[YES]    [NO]");
+  }
+  else
+  {
+    display.print("BPM: ");
+    display.println(beatAvg);
+
+    display.print("LAT: ");
+    display.println(lat,4);
+
+    display.print("LNG: ");
+    display.println(lng,4);
+
+    display.print("WiFi: ");
+
+    if(WiFi.status()==WL_CONNECTED)
+      display.println("OK");
+    else
+      display.println("OFF");
+  }
+
+  display.display();
 }
