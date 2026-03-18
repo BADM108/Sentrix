@@ -104,7 +104,7 @@ void loop() {
         }
     }
 
-    String path = "caretakers/" + String(CARETAKER_UID) + "/patients/" + String(DEVICE_ID);
+    String path = "devices/" + String(DEVICE_ID);
 
     // 3. Sync Vitals to Firebase (Every 3 seconds)
     if (Firebase.ready() && (millis() - lastFirebaseSync > 1500)) {
